@@ -1,0 +1,108 @@
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+// Implementation Hierarchy: Engine interface (LLL - Low Level Layer)
+class Engine
+{
+public:
+    virtual void start() = 0;
+    virtual ~Engine() {}
+};
+
+// Concrete Implementors (LLL)
+class PetrolEngine : public Engine
+{
+public:
+    void start() override
+    {
+        cout << "Petrol engine starting with ignition!" << endl;
+    }
+};
+
+class DieselEngine : public Engine
+{
+public:
+    void start() override
+    {
+        cout << "Diesel engine roaring to life!" << endl;
+    }
+};
+
+class ElectricEngine : public Engine
+{
+public:
+    void start() override
+    {
+        cout << "Electric engine powering up silently!" << endl;
+    }
+};
+
+// Abstraction Hierarchy: Car (HLL - High Level Layer)
+class Car
+{
+protected:
+    Engine *engine;
+
+public:
+    Car(Engine *e)
+    {
+        engine = e;
+    }
+
+    virtual void drive() = 0;
+};
+
+// Refined Abstraction: Sedan
+class Sedan : public Car
+{
+public:
+    Sedan(Engine *e) : Car(e) {}
+
+    void drive() override
+    {
+        engine->start();
+        cout << "Driving a Sedan on the highway." << endl;
+        cout << "----------------------------------\n\n";
+    }
+};
+
+// Refined Abstraction: SUV
+class SUV : public Car
+{
+public:
+    SUV(Engine *e) : Car(e) {}
+
+    void drive() override
+    {
+        engine->start();
+        cout << "Driving an SUV off-road." << endl;
+        cout << "----------------------------------\n\n";
+    }
+};
+
+int main()
+{
+    // Create Engine implementations on the heap
+    Engine *petrolEng = new PetrolEngine();
+    Engine *dieselEng = new DieselEngine();
+    Engine *electricEng = new ElectricEngine();
+
+    // Create Car abstractions, injecting Engine implementations
+    Car *mySedan = new Sedan(petrolEng);
+    Car *mySUV = new SUV(electricEng);
+    Car *yourSUV = new SUV(dieselEng);
+
+    // Use the cars
+    mySedan->drive();
+    mySUV->drive();
+    yourSUV->drive();
+
+    // Clean up
+    delete mySedan;
+    delete mySUV;
+    delete yourSUV;
+
+    return 0;
+}
